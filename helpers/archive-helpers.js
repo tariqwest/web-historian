@@ -46,6 +46,7 @@ exports.readListOfUrls = function(callback) {
 
 exports.isUrlInList = function(url, callback) {
   exports.readListOfUrls(function(array) {
+    console.log('url list: ', array[0]);
     callback(_.includes(array, url));
   });
 };
@@ -62,7 +63,9 @@ exports.addUrlToList = function(url, callback) {
 };
 
 exports.isUrlArchived = function(url, callback) {
+  console.log(`${exports.paths.archivedSites}/${url}`);
   fs.exists(`${exports.paths.archivedSites}/${url}`, function(exists) {
+    console.log('isUrlArchived callback');
     callback(exists);
   });
 };
@@ -78,9 +81,17 @@ exports.addUrlToArchive = function(url, urlData){
 };
 
 exports.downloadUrls = function(urls) {
+  console.log('Downloading...');
+  console.log('URL list: ', urls);
   for (var i = 0; i < urls.length; i++) {
-    request(urls[i], function(err, res, body) {
-      exports.addUrlToArchive(urls[i], body);
+    var fileName = urls[i];
+    request('http://'+fileName, function(err, res, body) {
+      if (err) {
+        console.log('Download failed: ', err);
+      } else {
+        console.log('Request successful, adding to archive');
+        exports.addUrlToArchive(fileName, body);
+      }
     });
   }
 };

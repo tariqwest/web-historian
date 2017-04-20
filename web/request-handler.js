@@ -59,6 +59,7 @@ exports.existsInArchive = function(exists, url, res) {
 };
 
 exports.existsInList = function(exists, url, res) {
+  console.log('exists in list: ', exists);
   if (exists) {
     archiveHelpers.isUrlArchived(url, function(exists) {
       exports.existsInArchive(exists, url, res);
@@ -110,6 +111,7 @@ exports.handleRequest = function (req, res) {
       body += '\n';
       var post = qs.parse(body);
       archiveHelpers.isUrlInList(post.url, function(exists) {
+        console.log(post.url);
         exports.existsInList(exists, post.url, res);
       });
     });
