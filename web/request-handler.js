@@ -12,7 +12,7 @@ exports.publicFile = function(url, res, statusCode) {
     if (err) {
       statusCode = 404;
       res.writeHead(statusCode, httpHelpers.headers);
-      res.write('404 Not in Archive, submit POST request to add\n' + JSON.stringify(err));
+      res.write('404 Not in Public Directory, submit POST request to add\n' + JSON.stringify(err));
       res.end();
     } else {
       httpHelpers.headers['Content-Type'] = `text/${fileExt}`;
@@ -25,13 +25,13 @@ exports.publicFile = function(url, res, statusCode) {
 
 exports.archivesFile = function(url, res) {
   var statusCode;
-  url = url.slice(1);
+  url = url.trim();
   fs.readFile(`${archiveHelpers.paths.archivedSites}/${url}`, function(err, data) {
-    statusCode = 200;
+    statusCode = 302;
     if (err) {
       statusCode = 404;
       res.writeHead(statusCode, httpHelpers.headers);
-      res.write(JSON.stringify(err));
+      res.write('404 Not in Archive, submit POST request to add\n' + JSON.stringify(err));
       res.end();
     } else {
       httpHelpers.headers['Content-Type'] = `text/html`;
@@ -51,6 +51,7 @@ exports.decideFile = function(exists, url, res) {
 };
 
 exports.existsInArchive = function(exists, url, res) {
+  console.log('exists in archive: ', exists);
   if (exists) {
     exports.archivesFile(url, res);
   } else {
@@ -110,7 +111,7 @@ exports.handleRequest = function (req, res) {
     req.on('end', function() {
       body += '\n';
       var post = qs.parse(body);
-      archiveHelpers.isUrlInList(post.url, function(exists) {
+      archiveHelpers.isUrlInList(JSON.parse(JSON.stringify(post.url.trim())), function(exists) {
         console.log(post.url);
         exports.existsInList(exists, post.url, res);
       });

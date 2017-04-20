@@ -46,7 +46,6 @@ exports.readListOfUrls = function(callback) {
 
 exports.isUrlInList = function(url, callback) {
   exports.readListOfUrls(function(array) {
-    console.log('url list: ', array[0]);
     callback(_.includes(array, url));
   });
 };
@@ -63,14 +62,19 @@ exports.addUrlToList = function(url, callback) {
 };
 
 exports.isUrlArchived = function(url, callback) {
-  console.log(`${exports.paths.archivedSites}/${url}`);
-  fs.exists(`${exports.paths.archivedSites}/${url}`, function(exists) {
-    console.log('isUrlArchived callback');
-    callback(exists);
+  console.log('check URL archive length: ', url.trim().length);
+  url = url.trim();
+  fs.stat(`${exports.paths.archivedSites}/${url}`, function(err, stats) {
+    if (err) {
+      throw err;
+    } else {
+      callback(true);
+    }
   });
 };
 
 exports.addUrlToArchive = function(url, urlData){
+  console.log('check URL archive length (add): ', url.length);
   fs.writeFile(`${exports.paths.archivedSites}/${url}`, urlData, function(err) {
     if (err) {
       console.log(err);
