@@ -1,6 +1,9 @@
 var fs = require('fs');
 var path = require('path');
 var _ = require('underscore');
+var rl = require('readline');
+var http = require('http');
+var request = require('request');
 
 /*
  * You will need to reuse the same paths many times over in the course of this sprint.
@@ -26,16 +29,51 @@ exports.initialize = function(pathsObj) {
 // modularize your code. Keep it clean!
 
 exports.readListOfUrls = function(callback) {
+  var urlArray = [];
+
+  var linereader = rl.createInterface({
+    input: fs.createReadStream(exports.paths.list)
+  });
+
+  linereader.on('line', function(line){
+    urlArray.push(line);
+  });
+
+  linereader.on('close', function(line){
+    callback(urlArray);
+  });
 };
 
 exports.isUrlInList = function(url, callback) {
+  exports.readListOfUrls(function(array) {
+    callback(_.includes(array, url));
+  });
 };
 
 exports.addUrlToList = function(url, callback) {
+  fs.appendFile(exports.paths.list, url, callback);
 };
 
 exports.isUrlArchived = function(url, callback) {
+  fs.exists(`${exports.paths.archivedSites}/${url}`, function(exists) {
+    callback(exists);
+  });
+};
+
+exports.addUrlToArchive = function(url, urlData){
+  fs.writeFile(`${exports.paths.archivedSites}/${url}`, urlData, function(err) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log('Data written successfully');
+    }
+  });
 };
 
 exports.downloadUrls = function(urls) {
+  for (var i = 0; i < urls.length; i++) {
+    request(urls[i], function(err, res, body) {
+      exports.addUrlToArchive(urls[i], body);
+    });
+  }
 };
