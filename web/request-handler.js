@@ -3,6 +3,8 @@ var archiveHelpers = require('../helpers/archive-helpers');
 var httpHelpers = require('./http-helpers');
 var fs = require('fs');
 var qs = require('querystring');
+//var jsdom = require('jsdom');
+var cheerio = require('cheerio');
 
 exports.publicFile = function(url, res, statusCode) {
   var fileExt = url.slice(url.indexOf('.') + 1);
@@ -15,6 +17,12 @@ exports.publicFile = function(url, res, statusCode) {
       res.write('404 Not in Public Directory, submit POST request to add\n' + JSON.stringify(err));
       res.end();
     } else {
+      // if(url === 'loading.html'){
+      //   console.log('modifying? ', url);
+      //   var $ = cheerio.load(data);
+      //   $('#polling-url').data('polling-data', 'http://127.0.0.1:8080/' + url);
+      //   var newData = $.html('html');
+      // }
       httpHelpers.headers['Content-Type'] = `text/${fileExt}`;
       res.writeHead(statusCode, httpHelpers.headers);
       res.write(data);

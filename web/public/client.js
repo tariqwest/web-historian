@@ -14,3 +14,22 @@ $('form').on('submit', function() {
     }
   });
 });
+
+if($('#polling-url').data('polling-data')){
+  var url = $('#polling-url').data('polling-data');
+  $.ajax({
+    url: url,
+    //data: $(this).serialize(),
+    method: 'GET',
+    success: function(data) {
+      console.log('Successful request');
+      document.open();
+      document.write(data);
+      document.close();
+    },
+    error: function(data) {
+      console.log(data);
+    }
+  });
+
+}

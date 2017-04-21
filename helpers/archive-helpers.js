@@ -66,7 +66,7 @@ exports.isUrlArchived = function(url, callback) {
   url = url.trim();
   fs.stat(`${exports.paths.archivedSites}/${url}`, function(err, stats) {
     if (err) {
-      throw err;
+      callback(false);
     } else {
       callback(true);
     }
