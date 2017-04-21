@@ -35,7 +35,7 @@ exports.archivesFile = function(url, res) {
   var statusCode;
   url = url.trim();
   fs.readFile(`${archiveHelpers.paths.archivedSites}/${url}`, function(err, data) {
-    statusCode = 302;
+    statusCode = 200;
     if (err) {
       statusCode = 404;
       res.writeHead(statusCode, httpHelpers.headers);
